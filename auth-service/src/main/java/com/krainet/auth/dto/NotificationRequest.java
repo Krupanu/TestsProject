@@ -1,8 +1,5 @@
-package com.krainet.notification.model;
+package com.krainet.auth.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,10 +9,11 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEventNotificationRequest {
+public class NotificationRequest {
     private String username;
     private String email;
     private String password;
     private String action;
     private List<String> adminEmails;
 }
+

@@ -21,12 +21,12 @@ public class NotificationController {
     private String from;
 
     @PostMapping("/user-event")
-    public void notifyAdmins(@RequestBody @Valid UserEventNotificationRequest req) {
-        String subject = String.format("%s пользователь %s.", req.getAction(), req.getUsername());
+    public void notifyAdmins(@RequestBody @Valid UserEventNotificationRequest request) {
+        String subject = String.format("%s пользователь %s.", request.getAction(), request.getUsername());
         String text = String.format("%s пользователь с именем - %s, паролем - %s и почтой - %s.",
-                req.getAction(), req.getUsername(), req.getPassword(), req.getEmail());
+                request.getAction(), request.getUsername(), request.getPassword(), request.getEmail());
 
-        for (String adminEmail : req.getAdminEmails()) {
+        for (String adminEmail : request.getAdminEmails()) {
             try {
                 SimpleMailMessage msg = new SimpleMailMessage();
                 msg.setFrom(from);
@@ -38,6 +38,6 @@ public class NotificationController {
                 log.error("Failed to send to {}: {}", adminEmail, e.getMessage());
             }
         }
-        log.info("Sent {} notifications to admins", req.getAdminEmails().size());
+        log.info("Sent {} notifications to admins", request.getAdminEmails().size());
     }
 }

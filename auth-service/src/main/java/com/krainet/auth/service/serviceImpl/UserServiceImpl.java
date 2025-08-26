@@ -1,5 +1,6 @@
 package com.krainet.auth.service.serviceImpl;
 
+import com.krainet.auth.dto.NotificationRequest;
 import com.krainet.auth.service.serviceImpl.UserServiceImpl;
 import com.krainet.auth.model.User;
 import com.krainet.auth.repository.UserRepository;
@@ -29,30 +30,44 @@ public class UserServiceImpl implements UserService {
     public List<User> findAll() { return userRepository.findAll(); }
 
     @Override
-    public User updateUser(User target, String newEmail, String newFirst, String newLast, String newPassword, boolean initiatedByAdmin) {
-        if (newEmail != null) target.setEmail(newEmail);
-        if (newFirst != null) target.setFirstName(newFirst);
-        if (newLast != null) target.setLastName(newLast);
+    public User updateUser(User user, String newEmail, String newFirst, String newLast, String newPassword, boolean initiatedByAdmin) {
+        if (newEmail != null) user.setEmail(newEmail);
+        if (newFirst != null) user.setFirstName(newFirst);
+        if (newLast != null) user.setLastName(newLast);
         String plain = null;
         if (newPassword != null && !newPassword.isBlank()) {
-            target.setPassword(passwordEncoder.encode(newPassword));
+            user.setPassword(passwordEncoder.encode(newPassword));
             plain = newPassword;
         }
-        userRepository.save(target);
+        userRepository.save(user);
 
         if (!initiatedByAdmin) {
             List<String> adminEmails = userRepository.findAllByRole(User.Role.ADMIN).stream().map(User::getEmail).toList();
-            notificationClient.sendUserEvent("Изменен", target.getUsername(), plain, target.getEmail(), adminEmails);
+            NotificationRequest notificationRequest = new NotificationRequest(
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getPassword(),
+                    "Изменен",
+                    adminEmails
+            );
+            notificationClient.sendNotification(notificationRequest);
         }
-        return target;
+        return user;
     }
 
     @Override
-    public void deleteUser(User target, boolean initiatedByAdmin, String plainPasswordIfKnown) {
-        userRepository.delete(target);
+    public void deleteUser(User user, boolean initiatedByAdmin, String plainPasswordIfKnown) {
+        userRepository.delete(user);
         if (!initiatedByAdmin) {
             List<String> adminEmails = userRepository.findAllByRole(User.Role.ADMIN).stream().map(User::getEmail).toList();
-            notificationClient.sendUserEvent("Удален", target.getUsername(), plainPasswordIfKnown, target.getEmail(), adminEmails);
+            NotificationRequest notificationRequest = new NotificationRequest(
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getPassword(),
+                    "Удален",
+                    adminEmails
+            );
+            notificationClient.sendNotification(notificationRequest);
         }
     }
 }
