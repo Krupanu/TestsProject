@@ -1,13 +1,13 @@
-FROM eclipse-temurin:17-jdk as build
+# ---------- Build stage ----------
+FROM maven:3.9.8-eclipse-temurin-17 AS build
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN ./mvnw -q -v || true
-RUN apt-get update && apt-get install -y maven
-RUN mvn -q -DskipTests package
+COPY . .
+WORKDIR /app/notification-service
+RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:17-jre
+# ---------- Runtime stage ----------
+FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8082
-ENTRYPOINT ["java","-jar","/app/app.jar","--spring.profiles.active=docker"]
+# Копируем любой jar из target
+COPY --from=build /app/notification-service/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
