@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
@@ -14,10 +15,10 @@ import java.util.Map;
 public class JwtService {
 
     private final Key key;
-    private final long expirationMs = 1000L * 60 * 60 * 24; // 24h
+    private final long expirationMs = 1000L * 60 * 60 * 24;
 
     public JwtService(@Value("${app.jwt.secret}") String secret) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
     }
 
     public String generateToken(String username, String role) {
