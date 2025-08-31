@@ -12,7 +12,7 @@ import java.util.List;
 public class NotificationClientImpl implements NotificationClient {
 
     private final RestTemplate restTemplate;
-    private final String notificationUrl = "http://notification-service:8081/api/notifications";
+    private final String notificationUrl = "http://notification-service:8082/api/notifications/user-event";
 
     public NotificationClientImpl(RestTemplateBuilder builder) {
         this.restTemplate = builder.build();

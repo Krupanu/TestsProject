@@ -16,6 +16,6 @@ spring:
     locations: classpath:db/migration
 app:
   jwt:
-    secret: ${JWT_SECRET:default_jwt_secret}
+    secret: ${JWT_SECRET:vl3OgAaTT+lqK6TyByjshHNDdfkxcF4KL3No0lLinBmB5e380viyZTxHsYIs6ExUsireolOWig5k+xRAa9LoGA==}
   notification:
     base-url: ${NOTIF_BASE_URL:http://localhost:8082}
